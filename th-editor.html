@@ -1,0 +1,239 @@
+<link rel="import" href="../polymer/polymer.html">
+
+
+<polymer-element name="th-editor" attributes="">
+  <template>
+    <style>
+      :host{
+        font-size: 12px;
+
+      } 
+      textarea, input { outline: none;  }
+      .panel {
+        position: absolute;
+        top: 5px;
+        right: -200px;
+        color: black;
+        width: 150px;
+        background: rgba(255,255,255,0.6);
+        z-index: 2;
+      }
+      .panel label {
+        display: inline-block;
+      }
+
+      .panel ul li {
+        height: 25px;
+      }
+
+      .input-feild {
+        width: 50px;
+        float: right;
+
+      }
+
+      ul { 
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      a {
+        color: #555;
+
+      }
+
+      .top_handle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-top: 1px solid black;
+        border-left: 1px solid black;
+        cursor: move;
+        top: 0;
+        left: 0;
+        z-index: 100;
+
+      }
+
+      #resize_handle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-bottom: 2px solid black;
+        border-right: 2px solid black;
+        cursor: move;
+        bottom: 0;
+        right: 0;
+        z-index: 100;
+      }
+      .dragging {
+        opacity: 0.5;
+      }
+
+    </style>
+    <div class="top_handle"></div>
+    <div id="resize_handle" draggable="true"></div>
+    <div class="panel">
+      <h4>Data</h4>
+
+      <template repeat="{{dataItem, index of chartData  }}">
+        <ul>
+          <template repeat="{{feild in chartDataFields}}">
+            <li><label>{{feild.friendly}}:</label> <input type="text" class="input-feild" id="data_{{index}}_{{feild.name}}"  value="{{chartData[index][feild.name]}}"> </li>
+          </template>
+          <template if="{{elementMeta.inputAttr.chartData.type=='table-repeating'}}">
+            <a href="javascript:void(0)" id="remove_data_{{index}}">remove</a>
+          </template>
+
+          <hr>
+        </ul>
+      </template>
+
+<!--       <template if="{{elementMeta.inputAttr.chartData.type=='table-repeating'}}">
+   
+ -->
+        <a href="javascript:void(0)" id="add_data">Add</a>
+
+<!--       </template>
+ -->
+    </div>
+  </template>
+
+  <script>
+
+      Polymer('th-editor', {
+        elementMeta: {},
+        domReady: function() {
+          var self = this;
+
+          this.elementToEdit = this.parentNode;
+          this.elementMeta = this.elementToEdit.getMetaData();
+          this.chartData = this.elementToEdit.chartData;
+
+          //this.elementToEdit.setAttribute('draggable' , true);  //doesn't do anything?!
+
+          var feildsObj = this.elementMeta.inputAttr.chartData.fields;
+
+          this.chartDataFields = [];
+          for(key in feildsObj) {
+            var val = feildsObj[key];
+            val.name = key;
+            this.chartDataFields.push(val);
+          }
+
+          var addDataBtn = this.shadowRoot.querySelector('#add_data');//self.$.add_data;
+          console.log(addDataBtn);
+          if(addDataBtn) {
+            addDataBtn.addEventListener('click', function() {
+              //var tempData = this.chartData;
+              var newDataRow = {};
+              console.log('self.chartDataFields');
+              console.log(self.chartDataFields);
+              for(dataIndex in self.chartDataFields) {
+                var dataDef = self.chartDataFields[dataIndex];
+                console.log('dataDef');
+                console.log(dataDef);
+                newDataRow[dataDef.name] = dataDef.default;
+                console.log(newDataRow);
+              }
+
+              self.chartData.push(newDataRow);
+
+              self.async(function() {
+                for(i in this.chartDataFields)
+                {
+                  var feildName = this.chartDataFields[i].name
+                    this.shadowRoot.querySelector('#data_'+(self.chartData.length -1)+'_'+feildName).addEventListener("keyup", function() {
+                        // console.log('chage');
+                        self.chartDataChanged();
+                    });
+                }
+
+
+            }, null, 500);
+
+
+            //   console.log(self.chartData);
+
+            });
+          }
+
+          this.async(function() {
+            for(j in this.chartData) {
+                for(i in this.chartDataFields)
+                {
+                  var feildName = this.chartDataFields[i].name
+                    this.shadowRoot.querySelector('#data_'+j+'_'+feildName).addEventListener("keyup", function() {
+                        // console.log('chage');
+                        self.chartDataChanged();
+                    });
+                }
+                var removeBtn = this.shadowRoot.querySelector('#remove_data_'+j)
+                if(removeBtn) {
+                  removeBtn.addEventListener("click", function() {
+                    var id = this.id;
+                    var indx = id.substring(id.lastIndexOf('_')+1,id.length);  // possible to seal j in closure?
+                    self.chartData.splice(indx, 1);
+
+                  });
+                }
+
+            }
+
+
+          }, null, 500);
+
+          this.$.resize_handle.addEventListener('dragstart', function(e) {
+            console.log('drag start');
+            this.classList.add('dragging');
+          });
+
+          this.$.resize_handle.addEventListener('dragend', function(e) {
+            console.log('dragged');
+            this.classList.remove('dragging');
+            console.log(e);
+
+
+            var chartWidth = self.elementToEdit.chartWidth;
+            var chartHeight = self.elementToEdit.chartHeight;
+
+            chartWidth = chartWidth + e.layerX;
+            chartHeight = chartHeight + e.layerY;
+
+            console.log(chartWidth);
+            console.log(chartHeight);
+
+            self.elementToEdit.chartWidth = chartWidth ;
+            self.elementToEdit.chartHeight = chartHeight ;
+
+            self.elementToEdit.resize();
+
+          });
+
+         // this.$.resize_handle.css.left = self.elementToEdit.chartWidth;
+         // this.$.resize_handle.css.top = self.elementToEdit.chartHeight;
+
+
+
+        },
+        anotherMethod: function() {
+
+        },
+      
+        chartDataChanged: function() {
+          console.log('value changed');
+          
+          //console.log(this.elementToEdit.chartData);
+          this.elementToEdit.chartData = this.chartData;
+          //console.log(this.elementToEdit.chartData);
+          this.elementToEdit.updateData();
+          this.elementToEdit.animate();  // needed for donut chart because it doesn't have updateData method
+
+
+        }
+
+      });
+
+  </script>
+</polymer-element>
