@@ -1,5 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
+<link rel="import" href="../polymer-ui-accordion/polymer-ui-accordion.html">
+
 
 <polymer-element name="th-editor" attributes="">
   <template>
@@ -8,15 +10,20 @@
         font-size: 12px;
 
       } 
-      textarea, input { outline: none;  }
+      textarea, input { 
+        outline: none; 
+        background-color: rgba(255,255,255,0.3); 
+        border: 0;
+      }
       .panel {
         position: absolute;
         top: 5px;
         right: -200px;
         color: black;
         width: 150px;
-        background: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.7);
         z-index: 2;
+        padding: 3px;
       }
       .panel label {
         display: inline-block;
@@ -71,32 +78,48 @@
         opacity: 0.5;
       }
 
+      .polymer-ui-collapsible-header {
+        cursor: pointer;
+      }
+
     </style>
     <div class="top_handle"></div>
     <div id="resize_handle" draggable="true"></div>
     <div class="panel">
-      <h4>Data</h4>
+      <polymer-ui-accordion selected="none">
+      <polymer-ui-collapsible>
+        <div class="polymer-ui-collapsible-header"><h4>Data</h4></div>
+        <div class="content">
+        <template repeat="{{dataItem, index of chartData  }}">
+          <ul>
+            <template repeat="{{feild in chartDataFields}}">
+              <li><label>{{feild.friendly}}:</label> <input type="text" class="input-feild" id="data_{{index}}_{{feild.name}}"  value="{{chartData[index][feild.name]}}"> </li>
+            </template>
+            <template if="{{elementMeta.inputAttr.chartData.type=='table-repeating'}}">
+              <a href="javascript:void(0)" id="remove_data_{{index}}">remove</a>
+            </template>
 
-      <template repeat="{{dataItem, index of chartData  }}">
-        <ul>
-          <template repeat="{{feild in chartDataFields}}">
-            <li><label>{{feild.friendly}}:</label> <input type="text" class="input-feild" id="data_{{index}}_{{feild.name}}"  value="{{chartData[index][feild.name]}}"> </li>
-          </template>
-          <template if="{{elementMeta.inputAttr.chartData.type=='table-repeating'}}">
-            <a href="javascript:void(0)" id="remove_data_{{index}}">remove</a>
-          </template>
-
-          <hr>
-        </ul>
-      </template>
-
+            <hr>
+          </ul>
+        </template>
 <!--       <template if="{{elementMeta.inputAttr.chartData.type=='table-repeating'}}">
-   
+
  -->
-        <a href="javascript:void(0)" id="add_data">Add</a>
+        <a href="javascript:void(0)" id="add_data" class="{{elementToEdit.id}}">Add</a>
 
 <!--       </template>
  -->
+
+        </div>
+      </polymer-ui-collapsible>
+      <polymer-ui-collapsible>
+        <div class="polymer-ui-collapsible-header"><h4>Properties</h4></div>
+        <div class="content">
+          coming soon ...
+        </div>
+      </polymer-ui-collapsible>
+    </polymer-ui-accordion>
+
     </div>
   </template>
 
@@ -108,8 +131,19 @@
           var self = this;
 
           this.elementToEdit = this.parentNode;
+          console.log("this.elementToEdit");
+          console.log(this.elementToEdit);
           this.elementMeta = this.elementToEdit.getMetaData();
           this.chartData = this.elementToEdit.chartData;
+
+          var observer = new PathObserver(self.elementToEdit, 'chartData');
+               observer.open(function(newValue, oldValue) {
+               console.log(newValue);
+               self.chartData = newValue;
+               console.log(self.chartData);
+
+          });
+
 
           //this.elementToEdit.setAttribute('draggable' , true);  //doesn't do anything?!
 
@@ -126,19 +160,19 @@
           console.log(addDataBtn);
           if(addDataBtn) {
             addDataBtn.addEventListener('click', function() {
+              console.log('button clicked:');
+              console.log(this);
               //var tempData = this.chartData;
               var newDataRow = {};
-              console.log('self.chartDataFields');
-              console.log(self.chartDataFields);
               for(dataIndex in self.chartDataFields) {
                 var dataDef = self.chartDataFields[dataIndex];
-                console.log('dataDef');
-                console.log(dataDef);
                 newDataRow[dataDef.name] = dataDef.default;
-                console.log(newDataRow);
               }
 
               self.chartData.push(newDataRow);
+
+              console.log(self.chartData);
+              console.log(self.elementToEdit);
 
               self.async(function() {
                 for(i in this.chartDataFields)
@@ -179,6 +213,20 @@
                   });
                 }
 
+            }
+
+            var display_btns = this.shadowRoot.querySelectorAll('.toggle_display');
+            console.log('display_btns');
+            if(display_btns!==undefined) {
+              [].forEach.call(display_btns, function(el) {
+                console.log(el);
+                el.addEventListener("click", function(btn) {
+                  console.log(btn);
+                  console.log(btn.querySelector('.container'));
+                  btn.querySelector('.container').classList.toggle('display');
+                })
+
+              });
             }
 
 
@@ -223,11 +271,13 @@
       
         chartDataChanged: function() {
           console.log('value changed');
+
+          // with data binding this shouldn't be needed...
           
           //console.log(this.elementToEdit.chartData);
-          this.elementToEdit.chartData = this.chartData;
+          //this.elementToEdit.chartData = this.chartData;
           //console.log(this.elementToEdit.chartData);
-          this.elementToEdit.updateData();
+          //this.elementToEdit.updateData();
           this.elementToEdit.animate();  // needed for donut chart because it doesn't have updateData method
 
 

@@ -1,0 +1,119 @@
+<link rel="import" href="../polymer/polymer.html">
+
+
+<polymer-element name="th-connector" attributes="">
+  <template>
+    <style>
+      :host{
+        font-size: 12px;
+
+      } 
+      #chartData_anchor1 {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+      }
+      #chartData_anchor2 {
+        position: absolute;
+        top: 25px;
+        left: 5px;
+      }
+      .anchor {
+        width: 5px;
+        height: 5px;
+        background-color: #555;
+        cursor: pointer;
+      }
+      
+
+    </style>
+    <div class="connectors">
+    </div>
+
+    <content></content>
+
+  </template>
+
+
+
+  <script>
+
+      Polymer('th-connector', {
+        elementMeta: {},
+        domReady: function() {
+          var self = this;
+          
+
+          var thelmaComponents = self.querySelectorAll('[thelma]');
+          console.log(thelmaComponents);
+          [].forEach.call(thelmaComponents, function(el) {
+              console.log(el);
+              console.log(el.getMetaData());
+          });
+
+          //var slider = self.querySelector('th-slider');
+          //var donut = self.querySelector('th-donut-chart');
+
+
+          var csv = self.querySelector('th-csv');
+          var url = self.querySelector('#url');
+
+          var col_from = self.querySelector('#col_from');
+          var col_to = self.querySelector('#col_to');
+          var row_from = self.querySelector('#row_from');
+          var row_to = self.querySelector('#row_to');
+
+          var csv_preview = self.querySelector('csv-preview');
+
+
+          var bar = self.querySelector('th-n-bar-chart-horizontal');
+
+          
+          
+
+
+          self.connectElements('th-csv','filteredData','csv-preview','data');
+
+          self.connectElements('th-csv','chartDataOutput','th-n-bar-chart-horizontal','chartData');
+
+          self.connectElements('#url','value','th-csv','url');
+
+          self.connectElements('#col_from','value','th-csv','filter_col_from');
+          self.connectElements('#col_to','value','th-csv','filter_col_to');
+          self.connectElements('#row_from','value','th-csv','filter_row_from');
+          self.connectElements('#row_to','value','th-csv','filter_row_to');
+
+
+
+
+          
+
+
+        },
+
+        connectElements: function(sourceQuery, sourceFeild, targetQuery, targetFeild) {
+
+          var self = this;
+
+          var srcEl = self.querySelector(sourceQuery);
+          var targetEl = self.querySelector(targetQuery);
+
+          var observer = new PathObserver(srcEl, sourceFeild);
+               observer.open(function(newValue, oldValue) {
+               console.log(newValue);
+               targetEl[targetFeild] = newValue;
+
+        });
+
+
+
+
+
+
+
+        }
+      
+      });
+
+  </script>
+</polymer-element>

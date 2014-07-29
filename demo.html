@@ -7,40 +7,68 @@
   <style>
   	body {
   		width: 800px;
+  		background-color: #888;
   	}
   </style>
 
   <script src="../platform/platform.js"></script>
   <link rel="import" href="th-editor.html">
+  <link rel="import" href="th-anchor.html">
+  <link rel="import" href="th-connector.html">
+  <link rel="import" href="th-csv.html">
 
   <link rel="import" href="../thelma-components/thelma_all.html">
 
 </head>
 <body unresolved>
 
-  <p>Thelma editor looks like this:</p>
 
-  <th-donut-chart animateOnInit="true">
+ 
 
-  	<th-editor></th-editor>
-
-  </th-donut-chart>
+<!--   	<th-editor></th-editor>
+ -->
+ 
 
   <br>
+  
+  <th-connector >
+	  
 
 
-  <th-n-bar-chart animateOnInit="true">
 
-  	<th-editor></th-editor>
+      <ul class="feilds">
+	      <li>URL (sample: http://sepans.com/misc/test.csv): <core-input id="url" placeHolder="URL"></core-input>
+	      <li>Filter Rows From: <core-input id="row_from" value=""  placeHolder="Filter Rows From"></core-input>
+	      <li>Filter Rows To: <core-input id="row_to" value=""  placeHolder="Filter Rows To"></core-input>
 
-  </th-n-bar-chart>
+	      <li>Filter Columns From: <core-input id="col_from" value=""  placeHolder="Filter Columns From"></core-input>
+	      <li>Filter Columns To: <core-input id="col_to" value=""  placeHolder="Filter Columns To"></core-input>
+	      <csv-preview data={{data}}></csv-preview>
+  	  </ul>
+
+	  <th-csv></th-csv>  
 
 
-  <th-n-peak-chart animateOnInit="true" style="float: right; ">
+	 <th-n-bar-chart-horizontal id="csv_chart">
+	 	<th-editor></th-editor>
 
-  	<th-editor></th-editor>
+	</th-n-bar-chart-horizontal>
 
-  </th-n-peak-chart>
+      <csv-preview style="float: right"></csv-preview>
+
+	
+
+  </th-connector>
+
+
+  <div style="margin: 40px 0; border-bottom: 1px solid #555"></div>
+
+
+  	 <th-n-bar-chart id="single">
+	 	<th-editor></th-editor>
+
+	</th-n-bar-chart>
+
 
 
 </body>
