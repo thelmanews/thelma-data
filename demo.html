@@ -36,26 +36,26 @@
 
 
 
-      <ul class="feilds">
-	      <li>URL (sample: http://sepans.com/misc/test.csv): <core-input id="url" placeHolder="URL"></core-input>
-	      <li>Filter Rows From: <core-input id="row_from" value=""  placeHolder="Filter Rows From"></core-input>
-	      <li>Filter Rows To: <core-input id="row_to" value=""  placeHolder="Filter Rows To"></core-input>
+    <ul class="feilds">
+      <li>URL (sample: http://sepans.com/misc/test.csv): <core-input id="url" placeHolder="URL"></core-input>
+      <li>Filter Rows From: <core-input id="row_from" value=""  placeHolder="Filter Rows From"></core-input>
+      <li>Filter Rows To: <core-input id="row_to" value=""  placeHolder="Filter Rows To"></core-input>
 
-	      <li>Filter Columns From: <core-input id="col_from" value=""  placeHolder="Filter Columns From"></core-input>
-	      <li>Filter Columns To: <core-input id="col_to" value=""  placeHolder="Filter Columns To"></core-input>
-	      <csv-preview data={{data}}></csv-preview>
-  	  </ul>
+      <li>Filter Columns From: <core-input id="col_from" value=""  placeHolder="Filter Columns From"></core-input>
+      <li>Filter Columns To: <core-input id="col_to" value=""  placeHolder="Filter Columns To"></core-input>
+      <csv-preview data={{data}}></csv-preview>
+	  </ul>
 
 	  <th-csv></th-csv>  
 
 
-	 <th-n-bar-chart-horizontal id="csv_chart">
-	 	<th-editor></th-editor>
+	  <th-n-bar-chart id="csv_chart">
+	 	 <th-editor></th-editor>
+    </th-n-bar-chart>
 
-	</th-n-bar-chart-horizontal>
+    <csv-preview id="unfiltered" style="float: right"></csv-preview>
 
-      <csv-preview style="float: right"></csv-preview>
-
+    <csv-preview id="filtered" style="float: right"></csv-preview>
 	
 
   </th-connector>
@@ -64,10 +64,11 @@
   <div style="margin: 40px 0; border-bottom: 1px solid #555"></div>
 
 
-  	 <th-n-bar-chart id="single">
+  <th-spectrum-chart id="single">
 	 	<th-editor></th-editor>
 
-	</th-n-bar-chart>
+	</th-spectrum-chart>
+
 
 
 

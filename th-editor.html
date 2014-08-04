@@ -56,7 +56,6 @@
         height: 8px;
         border-top: 1px solid black;
         border-left: 1px solid black;
-        cursor: move;
         top: 0;
         left: 0;
         z-index: 100;
@@ -91,16 +90,24 @@
         <div class="polymer-ui-collapsible-header"><h4>Data</h4></div>
         <div class="content">
         <template repeat="{{dataItem, index of chartData  }}">
-          <ul>
-            <template repeat="{{feild in chartDataFields}}">
-              <li><label>{{feild.friendly}}:</label> <input type="text" class="input-feild" id="data_{{index}}_{{feild.name}}"  value="{{chartData[index][feild.name]}}"> </li>
-            </template>
-            <template if="{{elementMeta.inputAttr.chartData.type=='table-repeating'}}">
-              <a href="javascript:void(0)" id="remove_data_{{index}}">remove</a>
-            </template>
+          <polymer-ui-accordion selected="none">
+            <polymer-ui-collapsible>          
+              <div class="polymer-ui-collapsible-header">+</div>
 
-            <hr>
-          </ul>
+              <ul class="content">
+                <template repeat="{{feild in chartDataFields}}">
+                  <li>
+                    <label>{{feild.friendly}}:</label> <input type="text" class="input-feild" id="data_{{index}}_{{feild.name}}"  value="{{chartData[index][feild.name]}}"> 
+                  </li>
+                </template>
+                <template if="{{elementMeta.inputAttr.chartData.type=='table-repeating'}}">
+                  <a href="javascript:void(0)" id="remove_data_{{index}}">remove</a>
+                </template>
+
+                <hr>
+              </ul>
+            </polymer-ui-collapsible>
+          </polymer-ui-accordion>
         </template>
 <!--       <template if="{{elementMeta.inputAttr.chartData.type=='table-repeating'}}">
 
@@ -277,7 +284,9 @@
           //console.log(this.elementToEdit.chartData);
           //this.elementToEdit.chartData = this.chartData;
           //console.log(this.elementToEdit.chartData);
-          //this.elementToEdit.updateData();
+
+          // even with binding this line is needed because observers only do shallow observation
+          this.elementToEdit.updateData();
           this.elementToEdit.animate();  // needed for donut chart because it doesn't have updateData method
 
 

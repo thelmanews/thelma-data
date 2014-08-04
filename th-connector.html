@@ -66,15 +66,17 @@
           var csv_preview = self.querySelector('csv-preview');
 
 
-          var bar = self.querySelector('th-n-bar-chart-horizontal');
+          var bar = self.querySelector('th-n-bar-chart');
 
           
           
 
 
-          self.connectElements('th-csv','filteredData','csv-preview','data');
+          self.connectElements('th-csv','filteredData','#filtered','data');
 
-          self.connectElements('th-csv','chartDataOutput','th-n-bar-chart-horizontal','chartData');
+          self.connectElements('th-csv','data','#unfiltered','data');
+
+          self.connectElements('th-csv','chartDataOutput','th-n-bar-chart','chartData');
 
           self.connectElements('#url','value','th-csv','url');
 
