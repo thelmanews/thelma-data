@@ -93,17 +93,17 @@
 
         },
 
-        connectElements: function(sourceQuery, sourceFeild, targetQuery, targetFeild) {
+        connectElements: function(sourceQuery, sourceField, targetQuery, targetField) {
 
           var self = this;
 
           var srcEl = self.querySelector(sourceQuery);
           var targetEl = self.querySelector(targetQuery);
 
-          var observer = new PathObserver(srcEl, sourceFeild);
+          var observer = new PathObserver(srcEl, sourceField);
                observer.open(function(newValue, oldValue) {
                console.log(newValue);
-               targetEl[targetFeild] = newValue;
+               targetEl[targetField] = newValue;
 
         });
 

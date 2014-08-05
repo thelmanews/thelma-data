@@ -33,7 +33,7 @@
         height: 25px;
       }
 
-      .input-feild {
+      .input-field {
         width: 50px;
         float: right;
 
@@ -95,9 +95,9 @@
               <div class="polymer-ui-collapsible-header">+</div>
 
               <ul class="content">
-                <template repeat="{{feild in chartDataFields}}">
+                <template repeat="{{field in chartDataFields}}">
                   <li>
-                    <label>{{feild.friendly}}:</label> <input type="text" class="input-feild" id="data_{{index}}_{{feild.name}}"  value="{{chartData[index][feild.name]}}"> 
+                    <label>{{field.friendly}}:</label> <input type="text" class="input-field" id="data_{{index}}_{{field.name}}"  value="{{chartData[index][field.name]}}"> 
                   </li>
                 </template>
                 <template if="{{elementMeta.inputAttr.chartData.type=='table-repeating'}}">
@@ -154,11 +154,11 @@
 
           //this.elementToEdit.setAttribute('draggable' , true);  //doesn't do anything?!
 
-          var feildsObj = this.elementMeta.inputAttr.chartData.fields;
+          var fieldsObj = this.elementMeta.inputAttr.chartData.fields;
 
           this.chartDataFields = [];
-          for(key in feildsObj) {
-            var val = feildsObj[key];
+          for(key in fieldsObj) {
+            var val = fieldsObj[key];
             val.name = key;
             this.chartDataFields.push(val);
           }
@@ -184,8 +184,8 @@
               self.async(function() {
                 for(i in this.chartDataFields)
                 {
-                  var feildName = this.chartDataFields[i].name
-                    this.shadowRoot.querySelector('#data_'+(self.chartData.length -1)+'_'+feildName).addEventListener("keyup", function() {
+                  var fieldName = this.chartDataFields[i].name
+                    this.shadowRoot.querySelector('#data_'+(self.chartData.length -1)+'_'+fieldName).addEventListener("keyup", function() {
                         // console.log('chage');
                         self.chartDataChanged();
                     });
@@ -204,8 +204,8 @@
             for(j in this.chartData) {
                 for(i in this.chartDataFields)
                 {
-                  var feildName = this.chartDataFields[i].name
-                    this.shadowRoot.querySelector('#data_'+j+'_'+feildName).addEventListener("keyup", function() {
+                  var fieldName = this.chartDataFields[i].name
+                    this.shadowRoot.querySelector('#data_'+j+'_'+fieldName).addEventListener("keyup", function() {
                         // console.log('chage');
                         self.chartDataChanged();
                     });
