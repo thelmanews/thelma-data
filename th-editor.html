@@ -122,7 +122,11 @@
       <polymer-ui-collapsible>
         <div class="polymer-ui-collapsible-header"><h4>Properties</h4></div>
         <div class="content">
-          coming soon ...
+          <template repeat="{{field in propertiesFields}}">
+            <li>
+              <label>{{field}}:</label> <input type="text" class="input-field" id="{{field}}"  value="{{currentState[field]}}"> 
+            </li>
+          </template>
         </div>
       </polymer-ui-collapsible>
     </polymer-ui-accordion>
@@ -142,6 +146,8 @@
           console.log(this.elementToEdit);
           this.elementMeta = this.elementToEdit.getMetaData();
           this.chartData = this.elementToEdit.chartData;
+          this.currentState = JSON.parse(this.elementToEdit.getState());
+         // TODO - add observer for other fields
 
           var observer = new PathObserver(self.elementToEdit, 'chartData');
                observer.open(function(newValue, oldValue) {
@@ -161,6 +167,15 @@
             var val = fieldsObj[key];
             val.name = key;
             this.chartDataFields.push(val);
+          }
+
+          this.propertiesFields = [];
+          for (key in this.currentState){
+            // Filter unnecessary fields from currentState out
+            // TODO: exclude animateOnInit and animateAfter (left in for now to see if it works)
+            if(key != "color" && key != "chartData" && key != "chartHeight" && key != "chartWidth"){
+              this.propertiesFields.push(key);
+            }
           }
 
           var addDataBtn = this.shadowRoot.querySelector('#add_data');//self.$.add_data;
@@ -275,7 +290,6 @@
         anotherMethod: function() {
 
         },
-      
         chartDataChanged: function() {
           console.log('value changed');
 
