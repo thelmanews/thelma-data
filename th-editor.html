@@ -146,8 +146,8 @@
         <ul class="content">
           <template repeat="{{field in propertiesFields}}">
             <li>
-              <label>{{field}}:</label> <input type="text" class="input-field" id="{{field}}"  value="{{currentState[field]}}"> 
-            </li>
+              <label>{{field}}:</label><input type="text" class="input-field" id="{{field}}"  value="{{elementToEdit[field]}}" disabled> 
+           </li>
           </template>
         </ul>
       </polymer-ui-collapsible>
@@ -168,7 +168,10 @@
           console.log(this.elementToEdit);
           this.elementMeta = this.elementToEdit.getMetaData();
           this.chartData = this.elementToEdit.chartData;
-          this.currentState = JSON.parse(this.elementToEdit.getState());
+          /*
+           NOTE: This property gets out of sync with component when component gets edited!
+           */
+          this.initialState = JSON.parse(this.elementToEdit.getState());
          // TODO - add observer for other fields
 
           var observer = new PathObserver(self.elementToEdit, 'chartData');
@@ -191,8 +194,8 @@
           }
 
           this.propertiesFields = [];
-          for (key in this.currentState){
-            // Filter unnecessary fields from currentState out
+          for (key in this.initialState){
+            // Filter unnecessary fields from initialState out
             // TODO: exclude animateOnInit and animateAfter (left in for now to see if it works)
             console.log(key);
             if(key != "color" && key != "chartData" && key != "chartHeight" && key != "chartWidth"){
@@ -245,11 +248,11 @@
               // delay is needed to make sure the element is created (callback available?!)
               self.async(function() {
 
-                self.bindRemoveBtn(self.chartData.length-1);
+                self._bindRemoveBtn(self.chartData.length-1);
 
                 for(i in this.chartDataFields)
                 {
-                  self.bindDataField(i,self.chartData.length-1);
+                  self._bindDataField(i,self.chartData.length-1);
                 }
 
 
@@ -266,9 +269,9 @@
             for(j in this.chartData) {
                 for(i in this.chartDataFields)
                 {
-                  self.bindDataField(i, j);
+                  self._bindDataField(i, j);
                 }
-                self.bindRemoveBtn(j);
+                self._bindRemoveBtn(j);
 
             }
 
@@ -307,7 +310,7 @@
 
 
         },
-        bindDataField: function(fieldIndex, rowIndex) {
+        _bindDataField: function(fieldIndex, rowIndex) {
 
           var self = this;
 
@@ -318,7 +321,7 @@
           });
 
         },
-        bindRemoveBtn: function(index) {
+        _bindRemoveBtn: function(index) {
           console.log(j);
           var self = this;
           var removeBtn = self.shadowRoot.querySelector('#remove_data_'+index);
