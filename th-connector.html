@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-selector/core-selector.html">
 
 
 <polymer-element name="th-connector" attributes="">
@@ -24,6 +25,29 @@
         background-color: #555;
         cursor: pointer;
       }
+      .item {
+        width: 100%;
+        border-bottom: 1px solid #555;
+
+      }
+      .panel .selector {
+        display: inline;
+        margin-right: 10px;
+
+      }
+      .panel core-selector {
+        width: 150px;
+        display: inline-block;
+        vertical-align: top;
+      }
+      .panel .core-selected {
+        color: #BBB;
+        border-bottom: 1px solid #AAA;
+      }
+      .panel label {
+        display: inline-block;
+        vertical-align: top;
+      }
       
 
     </style>
@@ -31,6 +55,54 @@
     </div>
 
     <content></content>
+    <div class="panel">
+      <div class="from selector">
+        <label for="src_component">From:</label>
+        <core-selector id="src_component">
+          <template repeat="{{el in elements}}">
+            <div class="item">{{el.tagName}}<template if="{{el.id}}">#{{el.id}}</template></div>
+          </template>
+
+        </core-selector>
+        <label for="src_attrs">Attributes:</label>
+        <core-selector id="src_attrs">
+          <template repeat="{{attr in _srcAttrs}}">
+            <div class="item">{{attr}}</div>
+          </template>
+
+        </core-selector>
+      </div>
+      <div class="to selector">
+        <label for="target_component">To:</label>
+        <core-selector id="target_component">
+          <template repeat="{{el in elements}}">
+            <div class="item">{{el.tagName}}<template if="{{el.id}}">#{{el.id}}</template></div>
+          </template>
+
+        </core-selector>
+        <label for="target_attrs">Attributes:</label>
+        <core-selector id="target_attrs">
+          <template repeat="{{attr in _targetAttrs}}">
+            <div class="item">{{attr}}</div>
+          </template>
+
+        </core-selector>
+      </div>
+      <div class="connections">
+          <label>connections: <label>
+          <ul>
+          <template repeat="{{connection in _connections}}">
+            <li class="connection">{{connection.sourceEl}}->{{connection.sourceProperty}} => 
+                    {{connection.targetEl}}->{{connection.targetProperty}} <a href="javascript:void(0)">x</a></li>
+          </template>
+          </ul>
+      </div>
+
+<!--       <template if="{{_srcPropertySelection && _targetPropertySelection}}">
+ -->        
+          <input type="button" id="connect" value="connect"></input>
+<!--       </template>
+ -->    </div>
 
   </template>
 
@@ -39,21 +111,51 @@
   <script>
 
       Polymer('th-connector', {
-        elementMeta: {},
+        elements: [],
+        _srcAttrs: [],
+        _targetAttrs: [],
+        _srcElementSelection: null,
+        _srcPropertySelection: null,
+        _targetElementSelection: null,
+        _targetPropertySelection: null,
+        _connections: [],
+
         domReady: function() {
           var self = this;
           
-
-          var thelmaComponents = self.querySelectorAll('[thelma]');
-          console.log(thelmaComponents);
-          [].forEach.call(thelmaComponents, function(el) {
-              console.log('medatada');
-              console.log(el);
-              console.log(el.getMetaData());
-          });
+          self._updateFields();
 
           //var slider = self.querySelector('th-slider');
           //var donut = self.querySelector('th-donut-chart');
+
+          self.$.src_component.addEventListener('core-select', function() {
+            self._srcElementSelection = this.selection.textContent;
+            self._srcAttrs = self._displayFeilds(this);
+
+          });
+          self.$.src_attrs.addEventListener('core-select', function() {
+            self._srcPropertySelection = this.selection.textContent;
+
+          });
+
+
+
+          self.$.target_component.addEventListener('core-select', function() {
+            self._targetElementSelection = this.selection.textContent;
+            self._targetAttrs = self._displayFeilds(this);
+
+          });
+          self.$.target_attrs.addEventListener('core-select', function() {
+            self._targetPropertySelection = this.selection.textContent;
+
+          });
+
+          self.$.connect.addEventListener('click', function() {
+            self.connectElements(self._srcElementSelection, self._srcPropertySelection,
+                                 self._targetElementSelection, self._targetPropertySelection);
+
+
+          });
 
 
           var csv = self.querySelector('th-csv');
@@ -77,7 +179,7 @@
 
           self.connectElements('th-csv','data','#unfiltered','data');
 
-          self.connectElements('th-csv','chartDataOutput','th-n-bar-chart','chartData');
+          //self.connectElements('th-csv','chartDataOutput','th-n-bar-chart','chartData');
 
           self.connectElements('#url','value','th-csv','url');
 
@@ -94,19 +196,69 @@
 
         },
 
-        connectElements: function(sourceQuery, sourceField, targetQuery, targetField) {
+        _updateFields: function() {
+
+          var self = this;
+          var boringTags = ['div','ul','li','span'];
+
+          var components = self.querySelectorAll('*'); //self.children;
+          [].forEach.call(components, function(el) {
+              if(boringTags.indexOf(el.tagName.toLowerCase())<0) {
+
+
+                self.elements.push(el);
+              }
+              if(typeof el.getMetaData === 'function') {
+                //console.log(el.getMetaData());  
+              }
+              
+          });
+
+        },
+
+        _displayFeilds: function(selector) {
+          var self = this;
+          var elSelector = selector.selection.textContent;
+          var el = self.querySelector(elSelector);
+          if(!el) {
+            return;
+          }
+          
+          var attrs = el.publish;
+          var attrsObj = [];
+          for(key in attrs) {
+            attrsObj.push(key);
+
+          }
+          return attrsObj;
+          
+        },
+
+        connectElements: function(source, sourceField, target, targetField) {
 
           var self = this;
 
-          var srcEl = self.querySelector(sourceQuery);
-          var targetEl = self.querySelector(targetQuery);
+          // check if source/target are dom element or query selector string:
+
+          var srcEl = (typeof source === "string") ? self.querySelector(source) : source;
+          var targetEl = (typeof target === "string") ? self.querySelector(target): target;
 
           var observer = new PathObserver(srcEl, sourceField);
                observer.open(function(newValue, oldValue) {
-               console.log(newValue);
                targetEl[targetField] = newValue;
 
-        });
+          });
+
+          //to set the value when elements are connected
+          targetEl[targetField] = srcEl[sourceField];  
+
+          self._connections.push({
+            sourceEl: source,
+            sourceProperty: sourceField,
+            targetEl: target,
+            targetProperty: targetField
+         });
+        
 
 
 
