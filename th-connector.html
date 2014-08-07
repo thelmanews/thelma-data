@@ -28,6 +28,7 @@
       .item {
         width: 100%;
         border-bottom: 1px solid #555;
+        line-height: 1.4em;
 
       }
       .panel .selector {
@@ -47,6 +48,30 @@
       .panel label {
         display: inline-block;
         vertical-align: top;
+      }
+      .connections {
+        margin-top: 10px;
+      }
+
+      .connections ul {
+        list-style: none;
+        width: 350px;
+        margin: 0;
+      }
+      .connections .del {
+        float: right;
+      }
+
+      .panel #connect {
+        float: right;
+        margin: 10px;
+        display: none;
+
+      }
+
+      a, a:visited {
+        color: #555;
+        text-decoration: none;
       }
       
 
@@ -88,21 +113,23 @@
 
         </core-selector>
       </div>
+<!--       <template if="{{_srcPropertySelection && _targetPropertySelection}}">
+ -->        
+          <input type="button" id="connect" value="connect" style="{{(_srcPropertySelection && _targetPropertySelection) ? 'display: block' : ''}}"></input>
+<!--       </template>
+ --> 
       <div class="connections">
           <label>connections: <label>
           <ul>
-          <template repeat="{{connection in _connections}}">
+          <template repeat="{{connection, index in _connections}}">
             <li class="connection">{{connection.sourceEl}}->{{connection.sourceProperty}} => 
-                    {{connection.targetEl}}->{{connection.targetProperty}} <a href="javascript:void(0)">x</a></li>
+                    {{connection.targetEl}}->{{connection.targetProperty}}
+                     <a href="javascript:void(0)" class="del" data-index="{{index}}" on-click={{_deleteConncetionHandler}}>delete</a></li>
           </template>
           </ul>
       </div>
 
-<!--       <template if="{{_srcPropertySelection && _targetPropertySelection}}">
- -->        
-          <input type="button" id="connect" value="connect"></input>
-<!--       </template>
- -->    </div>
+    </div>
 
   </template>
 
@@ -129,11 +156,19 @@
           //var donut = self.querySelector('th-donut-chart');
 
           self.$.src_component.addEventListener('core-select', function() {
+            if(!this.selection) {
+              return;
+            }
+            console.log(this.selection)
             self._srcElementSelection = this.selection.textContent;
             self._srcAttrs = self._displayFeilds(this);
+            self._srcPropertySelection = null;
 
           });
           self.$.src_attrs.addEventListener('core-select', function() {
+            if(!this.selection) {
+              return;
+            }
             self._srcPropertySelection = this.selection.textContent;
 
           });
@@ -141,11 +176,18 @@
 
 
           self.$.target_component.addEventListener('core-select', function() {
+            if(!this.selection) {
+              return;
+            }
             self._targetElementSelection = this.selection.textContent;
             self._targetAttrs = self._displayFeilds(this);
+            self._targetPropertySelection = null;
 
           });
           self.$.target_attrs.addEventListener('core-select', function() {
+            if(!this.selection) {
+              return;
+            }
             self._targetPropertySelection = this.selection.textContent;
 
           });
@@ -158,18 +200,6 @@
           });
 
 
-          var csv = self.querySelector('th-csv');
-          var url = self.querySelector('#url');
-
-          var col_from = self.querySelector('#col_from');
-          var col_to = self.querySelector('#col_to');
-          var row_from = self.querySelector('#row_from');
-          var row_to = self.querySelector('#row_to');
-
-          var csv_preview = self.querySelector('csv-preview');
-
-
-          var bar = self.querySelector('th-n-bar-chart');
 
           
           
@@ -177,7 +207,7 @@
 
           self.connectElements('th-csv','filteredData','#filtered','data');
 
-          self.connectElements('th-csv','data','#unfiltered','data');
+          //self.connectElements('th-csv','data','#unfiltered','data');
 
           //self.connectElements('th-csv','chartDataOutput','th-n-bar-chart','chartData');
 
@@ -256,15 +286,20 @@
             sourceEl: source,
             sourceProperty: sourceField,
             targetEl: target,
-            targetProperty: targetField
+            targetProperty: targetField,
+            observer: observer
          });
-        
 
 
+        },
 
-
-
-
+        _deleteConncetionHandler: function(e, detail, sender) {
+          var self = this;
+          console.log(e);
+          var index = e.target.getAttribute('data-index');
+          var observer = self._connections[index].observer;
+          observer.close();
+          self._connections.splice(index, 1);
 
         }
       
