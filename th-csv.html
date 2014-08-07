@@ -4,7 +4,7 @@
 <link rel="import" href="../csv-preview/csv-preview.html">
 
 
-<polymer-element name="th-csv" attributes="url filter_row_from filter_row_to filter_col_from filter_col_to chartDataOutput">
+<polymer-element name="th-csv" attributes="url filter_row_from filter_row_to filter_col_from filter_col_to data filteredData chartDataOutput" thelma>
 
   <template>
     <!--<core-ajax id="ajax"  response="{{data}}" on-core-error="" headers='{"Access-Control-Allow-Origin": "*"}' auto ></core-ajax>-->
@@ -112,7 +112,30 @@
 
 
 
-        }
+        },
+          getMetaData: function() {
+                return {
+                  "name": "th-csv",
+                  "description": "Fetches CSV from a source plus ability to filter rows/columns ",
+                  "category":"data",
+                  "version": "0.0.1",
+                  "thumbnail":"csv.jpg", 
+                  "tags":["csv", "data"],
+                  "inputAttr": {
+                    "url":{"friendly":"URL", "type":"String", "default":"", "hint": "http://sepans.com/misc/test.csv"},
+                    "filter_row_from":{"friendly":"Filter Rows From Index", "type":"int", "default":0},
+                    "filter_row_to":{"friendly":"Filter Rows To Index", "type":"int", "default":0},
+                    "filter_col_from":{"friendly":"Filter Columns From Index", "type":"int", "default":0},
+                    "filter_col_to":{"friendly":"Filter Columns To Index", "type":"int", "default":0}
+                  },
+                  "outputAttr": {
+                    "data":{"friendly":"Data", "type":"json"},
+                    "filteredData":{"friendly":"Data after filtering", "type":"json"},
+                    "chartDataOutput":{"friendly":"Data for chart", "type":"json"},
+                  }
+                }
+            }
+
 /*
         dataReady: function(d) {
           console.log('data ready');
