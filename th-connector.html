@@ -186,13 +186,11 @@
           
           self._updateFields();
 
-          console.log('th-connector 1');
 
           //var slider = self.querySelector('th-slider');
           //var donut = self.querySelector('th-donut-chart');
 
           self.$.src_component.addEventListener('core-select', function() {
-            console.log(this);
             if(!this.selection) {
               return;
             }
@@ -200,7 +198,6 @@
             if(prev) {
               prev.classList.remove('selected-src-element');
             }
-            console.log(self.querySelector(this.selection.textContent));
             self.querySelector(this.selection.textContent).classList.add('selected-src-element');
             self._srcElementSelection = this.selection.textContent;
             self._srcAttrs = self._displayFeilds(this);
@@ -215,7 +212,6 @@
 
           });
 
-          console.log('th-connector 2');
 
 
           self.$.target_component.addEventListener('core-select', function() {
@@ -267,6 +263,7 @@
           self.connectElements('#row_to','value','th-csv','filter_row_to');
 
 
+          self.connectElements('th-csv','data','th-basic-function','dataIn');
 
 
           
@@ -287,7 +284,6 @@
                 self.elements.push(el);
               }
               if(typeof el.getMetaData === 'function') {
-                //console.log(el.getMetaData());  
               }
               
           });
@@ -343,7 +339,6 @@
 
         _deleteConncetionHandler: function(e, detail, sender) {
           var self = this;
-          console.log(e);
           var index = e.target.getAttribute('data-index');
           var observer = self._connections[index].observer;
           observer.close();
