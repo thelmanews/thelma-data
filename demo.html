@@ -6,9 +6,14 @@
 
   <style>
   	body {
-  		width: 800px;
-  		background-color: #888;
+  		width: 1000px;
+  		background-color: #f5f5f5;
   	}
+    ul {
+      margin: 5px 0;
+      padding: 0;
+      list-style: none;
+    }
   </style>
 
   <script src="../platform/platform.js"></script>
@@ -43,16 +48,19 @@
 
       <li>Filter Columns From: <core-input id="col_from" value=""  placeHolder="Filter Columns From"></core-input>
       <li>Filter Columns To: <core-input id="col_to" value=""  placeHolder="Filter Columns To"></core-input>
-      <csv-preview data={{data}}></csv-preview>
 	  </ul>
 
 	  <th-csv></th-csv>  
 
 
-	  <th-n-bar-chart id="chart">
- 	 	 <th-editor></th-editor>
-     
-   </th-n-bar-chart>
+	  <th-n-bar-chart id="chart" >
+   	 	 <th-editor></th-editor>
+    </th-n-bar-chart>
+
+    <th-stacked-chart id="stacked" style="float: right;">
+       <th-editor></th-editor>
+    </th-stacked-chart>
+
 
     <csv-preview id="unfiltered" style="float: right"></csv-preview>
 
@@ -62,21 +70,6 @@
   </th-connector>
 
 
-  <div style="margin: 40px 0; border-bottom: 1px solid #555"></div>
-
-<!-- 
-  <th-spectrum-chart id="single">
-	 	<th-editor></th-editor>
-
-	</th-spectrum-chart>
-
-  <div style="margin: 40px 0; border-bottom: 1px solid #555"></div>
-
-  <th-n-peak-chart >
-    <th-editor></th-editor>
-
-  </th-n-peak-chart>
- -->
 
 
 
