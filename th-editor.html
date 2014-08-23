@@ -197,7 +197,6 @@
           for (key in this.initialState){
             // Filter unnecessary fields from initialState out
             // TODO: exclude animateOnInit and animateAfter (left in for now to see if it works)
-            console.log(key);
             if(key != "color" && key != "chartData" && key != "chartHeight" && key != "chartWidth"){
               this.propertiesFields.push(key);
             }
@@ -322,11 +321,8 @@
 
         },
         _bindRemoveBtn: function(index) {
-          console.log(j);
           var self = this;
           var removeBtn = self.shadowRoot.querySelector('#remove_data_'+index);
-          console.log('removeBtn');
-          console.log(removeBtn);
           if(removeBtn) {
             removeBtn.addEventListener("click", function() {
               console.log('clicked');
@@ -349,8 +345,10 @@
 
           // even with binding this line is needed because observers only do shallow observation
           this.elementToEdit.updateData();
-          this.elementToEdit.animate();  // needed for donut chart because it doesn't have updateData method
+         
 
+         // this.elementToEdit.animate();  // needed for donut chart because it doesn't have updateData method
+         //TODO instead put this.animate in th-d3-chart to be picked up by donut chart?!
 
         }
 
